@@ -4,23 +4,23 @@ import sys
 # By obtaining(Deriving) Exception parent class we are creating our own HousingException class.
 class HousingException(Exception):
 
-    def __init__(self,error_message:Exception,error_module:sys):
+    def __init__(self,error_message:Exception,error_detail:sys):
 
         # Super() means Parent class : To Parent Class Initializer i am passing error message.
         super().__init__(error_message)
         self.error_message = HousingException.get_detailed_error_message(error_message=error_message,
-                                                                         error_module=error_module)
+                                                                         error_module=error_detail)
 
 
     @staticmethod
-    def get_detailed_error_message(error_message:Exception,error_module:sys)->str:
+    def get_detailed_error_message(error_message:Exception,error_detail:sys)->str:
 
         """
         error_message: Exception object
         error_detail: object of sys module
         """
 
-        _,_,exec_tb = error_module.exc_info()
+        _,_,exec_tb = error_detail.exc_info()
         line_number = exec_tb.tb_frame.f_lineno
         file_name = exec_tb.tb_frame.f_code.co_filename
         error_message = f"Error occured in Script: [{file_name}] at line number: [{line_number}] error message: [{error_message}]"
