@@ -27,7 +27,7 @@ def main():
 
         # file_path = r"C:\Users\ABHI\Desktop\Acer-data\Ineuron.Ai\Machine-Learning\Machine-Learning-End-to-End-Project\Machine-Learning-End-to-End-Project\Housing\artifact\data_ingestion\2023-11-22-13-44-45\ingested_data\train\housing.csv"
 
-        # df = DataTransformation.load_data(file_path=file_path,schema_file_path=schema_file_path)
+        # df = DataTransformation.load_data(file_path=file_path,schema_file_path=schema_file_path)  
 
         # print(df.columns)
         # print(df.dtypes)

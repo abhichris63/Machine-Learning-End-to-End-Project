@@ -3,13 +3,13 @@ import importlib
 from pyexpat import model
 import numpy as np
 import yaml
-from housing.exception import HousingException
+from Housing.exception import HousingException
 import os
 import sys
 
 from collections import namedtuple
 from typing import List
-from housing.logger import logging
+from Housing.logger import logging
 from sklearn.metrics import r2_score,mean_squared_error
 GRID_SEARCH_KEY = 'grid_search'
 MODULE_KEY = 'module'

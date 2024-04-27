@@ -2,24 +2,24 @@ from collections import namedtuple
 from datetime import datetime
 import uuid
 from Housing.config.configuration import Configuration
-# from Housing.logger import logging, get_log_file_name
+from Housing.logger import logging, get_log_file_name
 from Housing.logger import logging
 from Housing.exception import HousingException
 from threading import Thread
 from typing import List
 
 from multiprocessing import Process
-from Housing.entity.artifact_entity import DataIngestionArtifact
-# from Housing.entity.artifact_entity import ModelPusherArtifact, ModelEvaluationArtifact, ModelTrainerArtifact
+from Housing.entity.artifact_entity import DataIngestionArtifact , ModelTrainerArtifact
+from Housing.entity.artifact_entity import ModelPusherArtifact, ModelEvaluationArtifact
 from Housing.entity.artifact_entity import DataValidationArtifact, DataTransformationArtifact
 from Housing.entity.config_entity import DataIngestionConfig
-# from Housing.entity.config_entity import ModelEvaluationConfig
+from Housing.entity.config_entity import ModelEvaluationConfig
 from Housing.component.data_ingestion import DataIngestion
 from Housing.component.data_validation import DataValidation
 from Housing.component.data_transformation import DataTransformation
-# from Housing.component.model_trainer import ModelTrainer
-# from Housing.component.model_evaluation import ModelEvaluation
-# from Housing.component.model_pusher import ModelPusher
+from Housing.component.model_trainer import ModelTrainer
+from Housing.component.model_evaluation import ModelEvaluation
+from Housing.component.model_pusher import ModelPusher
 import os, sys
 from collections import namedtuple
 from datetime import datetime
@@ -78,37 +78,37 @@ class Pipeline(Thread):
         except Exception as e:
             raise HousingException(e, sys)
 
-    # def start_model_trainer(self, data_transformation_artifact: DataTransformationArtifact) -> ModelTrainerArtifact:
-    #     try:
-    #         model_trainer = ModelTrainer(model_trainer_config=self.config.get_model_trainer_config(),
-    #                                      data_transformation_artifact=data_transformation_artifact
-    #                                      )
-    #         return model_trainer.initiate_model_trainer()
-    #     except Exception as e:
-    #         raise HousingException(e, sys) from e
+    def start_model_trainer(self, data_transformation_artifact: DataTransformationArtifact) -> ModelTrainerArtifact:
+        try:
+            model_trainer = ModelTrainer(model_trainer_config=self.config.get_model_trainer_config(),
+                                         data_transformation_artifact=data_transformation_artifact
+                                         )
+            return model_trainer.initiate_model_trainer()
+        except Exception as e:
+            raise HousingException(e, sys) from e
 
-    # def start_model_evaluation(self, data_ingestion_artifact: DataIngestionArtifact,
-    #                            data_validation_artifact: DataValidationArtifact,
-    #                            model_trainer_artifact: ModelTrainerArtifact) -> ModelEvaluationArtifact:
-    #     try:
-    #         model_eval = ModelEvaluation(
-    #             model_evaluation_config=self.config.get_model_evaluation_config(),
-    #             data_ingestion_artifact=data_ingestion_artifact,
-    #             data_validation_artifact=data_validation_artifact,
-    #             model_trainer_artifact=model_trainer_artifact)
-    #         return model_eval.initiate_model_evaluation()
-    #     except Exception as e:
-    #         raise HousingException(e, sys) from e
+    def start_model_evaluation(self, data_ingestion_artifact: DataIngestionArtifact,
+                               data_validation_artifact: DataValidationArtifact,
+                               model_trainer_artifact: ModelTrainerArtifact) -> ModelEvaluationArtifact:
+        try:
+            model_eval = ModelEvaluation(
+                model_evaluation_config=self.config.get_model_evaluation_config(),
+                data_ingestion_artifact=data_ingestion_artifact,
+                data_validation_artifact=data_validation_artifact,
+                model_trainer_artifact=model_trainer_artifact)
+            return model_eval.initiate_model_evaluation()
+        except Exception as e:
+            raise HousingException(e, sys) from e
 
-    # def start_model_pusher(self, model_eval_artifact: ModelEvaluationArtifact) -> ModelPusherArtifact:
-    #     try:
-    #         model_pusher = ModelPusher(
-    #             model_pusher_config=self.config.get_model_pusher_config(),
-    #             model_evaluation_artifact=model_eval_artifact
-    #         )
-    #         return model_pusher.initiate_model_pusher()
-    #     except Exception as e:
-    #         raise HousingException(e, sys) from e
+    def start_model_pusher(self, model_eval_artifact: ModelEvaluationArtifact) -> ModelPusherArtifact:
+        try:
+            model_pusher = ModelPusher(
+                model_pusher_config=self.config.get_model_pusher_config(),
+                model_evaluation_artifact=model_eval_artifact
+            )
+            return model_pusher.initiate_model_pusher()
+        except Exception as e:
+            raise HousingException(e, sys) from e
 
     def run_pipeline(self):
         try:
@@ -142,34 +142,34 @@ class Pipeline(Thread):
                 data_ingestion_artifact=data_ingestion_artifact,
                 data_validation_artifact=data_validation_artifact
             )
-            # model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
+            model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
 
-            # model_evaluation_artifact = self.start_model_evaluation(data_ingestion_artifact=data_ingestion_artifact,
-            #                                                         data_validation_artifact=data_validation_artifact,
-            #                                                         model_trainer_artifact=model_trainer_artifact)
+            model_evaluation_artifact = self.start_model_evaluation(data_ingestion_artifact=data_ingestion_artifact,
+                                                                    data_validation_artifact=data_validation_artifact,
+                                                                    model_trainer_artifact=model_trainer_artifact)
 
-            # if model_evaluation_artifact.is_model_accepted:
-            #     model_pusher_artifact = self.start_model_pusher(model_eval_artifact=model_evaluation_artifact)
-            #     logging.info(f'Model pusher artifact: {model_pusher_artifact}')
-            # else:
-            #     logging.info("Trained model rejected.")
-            # logging.info("Pipeline completed.")
+            if model_evaluation_artifact.is_model_accepted:
+                model_pusher_artifact = self.start_model_pusher(model_eval_artifact=model_evaluation_artifact)
+                logging.info(f'Model pusher artifact: {model_pusher_artifact}')
+            else:
+                logging.info("Trained model rejected.")
+            logging.info("Pipeline completed.")
 
-            # stop_time = datetime.now()
-            # Pipeline.experiment = Experiment(experiment_id=Pipeline.experiment.experiment_id,
-            #                                  initialization_timestamp=self.config.time_stamp,
-            #                                  artifact_time_stamp=self.config.time_stamp,
-            #                                  running_status=False,
-            #                                  start_time=Pipeline.experiment.start_time,
-            #                                  stop_time=stop_time,
-            #                                  execution_time=stop_time - Pipeline.experiment.start_time,
-            #                                  message="Pipeline has been completed.",
-            #                                  experiment_file_path=Pipeline.experiment_file_path,
-            #                                  is_model_accepted=model_evaluation_artifact.is_model_accepted,
-            #                                  accuracy=model_trainer_artifact.model_accuracy
-            #                                  )
-            # logging.info(f"Pipeline experiment: {Pipeline.experiment}")
-            # self.save_experiment()
+            stop_time = datetime.now()
+            Pipeline.experiment = Experiment(experiment_id=Pipeline.experiment.experiment_id,
+                                             initialization_timestamp=self.config.time_stamp,
+                                             artifact_time_stamp=self.config.time_stamp,
+                                             running_status=False,
+                                             start_time=Pipeline.experiment.start_time,
+                                             stop_time=stop_time,
+                                             execution_time=stop_time - Pipeline.experiment.start_time,
+                                             message="Pipeline has been completed.",
+                                             experiment_file_path=Pipeline.experiment_file_path,
+                                             is_model_accepted=model_evaluation_artifact.is_model_accepted,
+                                             accuracy=model_trainer_artifact.model_accuracy
+                                             )
+            logging.info(f"Pipeline experiment: {Pipeline.experiment}")
+            self.save_experiment()
         except Exception as e:
             raise HousingException(e, sys) from e
 
