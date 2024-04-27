@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime 
+from datetime import datetime
 import os
 
 # All the log files will be stored LOG_DIR Directory.

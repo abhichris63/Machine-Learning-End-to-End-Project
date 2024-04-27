@@ -20,6 +20,7 @@ class DataValidation:
     def __init__(self,data_validation_config:DataValidationConfig,
                  data_ingestion_artifact:DataIngestionArtifact):
         try:
+            logging.info(f"{'='*20} Data Validation log started. {'='*20} \n \n")
             self.data_validation_config = data_validation_config
             self.data_ingestion_artifact = data_ingestion_artifact
         except Exception as e:
@@ -66,16 +67,16 @@ class DataValidation:
         
     def validate_dataset_schema(self):
         try:
-            validation_status = False
+            # validation_status = False
 
             # if self.is_train_test_file_exists() is True:
 
-                # DATA_VALIDATION_CONFIG_KEY[]
+            #     DATA_VALIDATION_CONFIG_KEY[]
 
 
 
             #Assignment validate training and testing dataset using scheme file.
-            # 1. Number of columns 
+            # 1. Number of columns
             # 2. Check the values of Ocean promixity
             # & acceptable values
             # 3. Check column names
@@ -147,6 +148,10 @@ class DataValidation:
                 message = "Data Validation preformed successfully."
             )
             logging.info(f"Data Validation Artifact: { data_validation_artifact }")
-            return DataValidationArtifact
+            return data_validation_artifact
         except Exception as e:
             raise HousingException(e,sys) from e
+        
+    
+    def __del__(self):
+        logging.info(f"{'='*20} Data Validation log completed. {'='*20} \n \n")

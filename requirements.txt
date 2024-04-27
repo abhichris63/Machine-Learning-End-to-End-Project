@@ -6,4 +6,5 @@ pandas
 numpy
 PyYAML
 evidently==0.2.8
+dill
 -e .
